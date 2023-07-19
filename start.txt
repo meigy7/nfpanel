@@ -1,0 +1,105 @@
+source venv/bin/activate
+cd nfstats_project/
+nohup python3 manage.py runserver
+
+uwsgi --ini nfstats_project/nfstats/nfstats.ini
+
+###CONFIGS
+nano /etc/nfdump/default.conf
+nano /etc/snmp/snmp.conf
+nano /etc/nginx/sites-enabled/nfstats
+
+###LOGS:
+tail -200 /var/log/nfstats.log
+
+
+Command: '/usr/bin/snmpwalk -v2c -Oseqn -c localhost localhost .1.3.6.1.2.1.2.2.1.2'
+Error: (Shell) Return: b'Timeout: No Response from localhost\n' 
+
+
+
+
+
+
+
+
+
+``` 
+Подключение NGINX:
+sudo apt-get install nginx uwsgi
+sudo apt-get install uwsgi-plugin-python3
+#chown www-data nfpanel/nfstats/static
+#python3 manage.py collectstatic
+
+nano /etc/nginx/nginx.conf ### Оставляем пустым
+nano /etc/nginx/sites-enabled/nfstats
+    server {
+        listen 81;
+        server_tokens off;
+        server_name 0.0.0.0;
+
+        location / {
+                include uwsgi_params;
+                #uwsgi_pass unix:///run/uwsgi/app/nfstats/socket;
+                uwsgi_pass unix:///var/www/nfpanel/nfstats/nfstats/nfstats.sock;
+            }
+    }
+        
+nano /var/www/nfpanel/nfstats/nfstats/nfstats.ini
+    #socket = /run/uwsgi/app/nfstats/socket
+    socket = /var/www/nfpanel/nfstats/nfstats/nfstats.sock
+
+
+service uwsgi restart
+service nginx restart
+
+sudo groupadd varwwwusers
+sudo adduser www-data varwwwusers
+sudo chgrp -R varwwwusers /tmp/project-master.pid
+sudo chmod -R 775 /tmp/project-master.pid
+
+sudo chgrp -R varwwwusers /var/www/nfpanel/nfstats
+sudo chmod -R 775 /var/www/nfpanel/nfstats
+
+
+sudo chgrp -R varwwwusers nfstats_project/nfstats/nfstats.sock
+sudo chmod -R 770 nfstats_project/nfstats/nfstats.sock
+
+
+sudo groupadd nfcapdgroup
+sudo adduser nfcapd nfcapdgroup
+sudo chgrp -R nfcapdgroup data
+sudo chmod -R 770 data
+
+###NFDUMP:
+nano /etc/nfdump/default.conf
+ls -laZ /var/cache/nfdump
+# Может быть, права доступа к папке с дампами
+drwxr-xr-x  2 root root ? 4096 июл 19 01:35 nfdump
+options='-l /var/www/nfpanel/nfstats/nfstats/data -p 2055'
+
+###Запуск серверов
+python3 manage.py runserver
+uwsgi --http :81 --module nfstats.wsgi
+
+sudo ln -s ~/path/to/your/mysite/mysite_nginx.conf /etc/nginx/sites-enabled/
+
+#Запуск uwsgi:
+uwsgi --ini nfstats/myapp.ini
+uwsgi --socket nfstats.sock --wsgi-file wsgi.py --chmod-socket=664
+uwsgi --chdir=/var/www/nfpanel/nfstats_project --socket nfstats_project/nfstats/nfstats.sock --wsgi-file nfstats_project/nfstats/wsgi.py --chmod-socket=664
+uwsgi --ini nfstats_project/nfstats/nfstats.ini
+
+# Projectname: nfstats  # settings.py WSGI_APPLICATION = 'nfstats.wsgi.application'
+
+ГДЕ СМОТРЕТЬ ЛОГИ?
+/var/log/nginx
+/var/log/uwsgi/app
+
+tail -200 /var/log/nginx/error.log
+
+Разрешаем смотреть лог, помогли 2 команды:
+sudo chmod -R 777 /var/log/nfstats.log
+sudo chown www-data:www-data /var/log/nfstats.log
+
+```

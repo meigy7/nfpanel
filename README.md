@@ -99,9 +99,11 @@ pip install mysqlclient
 **3. Create DB**
  - Postgresql
 ```
+sudo -u postgres psql
 postgres=# create database nfstats_db;
 postgres=# create user nfstats_dbuser with encrypted password 'nfstatsdbpass';
 postgres=# grant all ON DATABASE nfstats_db to nfstats_dbuser;
+exit
 ```
  - MySQL
 ```
@@ -167,7 +169,7 @@ python manage.py migrate
   - the "/var/www/nfstats/nfstats/data" dir must be writable by the nfcapd user.
  
 **7. Add NFstats to your Web Server and restart it** 
- 
+
 Apache with mod-wsgi-py3 config example
 ```
 <VirtualHost *:80>
@@ -179,12 +181,13 @@ Apache with mod-wsgi-py3 config example
         WSGIProcessGroup nfstats.example.com
 </VirtualHost>
 ```
+
 **8. Put "nfstats/bin/interface_speed.py" script to a cron to execute it every minute**
 Script records the interface speed in bps to the DB. This is used for the recalculating the data received from 
 netflow collector. So you can use not 1:1 sample rate (sample each packet) on your network devices, but for example 1:2000 packets, 
 save the device cpu and get the truthful static data.
 ```
-*/1 * * * * /var/www/nfstats/venv/bin/python /www/nfstats/nfstats/bin/interface_speed.py
+*/1 * * * * /var/www/nfpanel/nfstats/venv/bin/python /var/www/nfpanel/nfstats/bin/interface_speed.py
 ```
 
 ## Usage

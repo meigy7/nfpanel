@@ -1,0 +1,10 @@
+[19/Jul/2023 06:31:21] "GET / HTTP/1.0" 200 14662
+[19/Jul/2023 06:31:23] "POST /get_pie_chart_data HTTP/1.0" 200 2
+[19/Jul/2023 06:31:30] "GET / HTTP/1.0" 200 14662
+[19/Jul/2023 06:31:31] "POST /get_pie_chart_data HTTP/1.0" 200 2
+[19/Jul/2023 06:39:00] "GET / HTTP/1.0" 200 14662
+[19/Jul/2023 10:45:50] "GET / HTTP/1.0" 200 14662
+Not Found: /Public/home/js/check.js
+[19/Jul/2023 10:45:52] "GET /Public/home/js/check.js HTTP/1.0" 404 6161
+[19/Jul/2023 11:52:45] "GET / HTTP/1.0" 200 14662
+[19/Jul/2023 11:52:45] "POST /get_pie_chart_data HTTP/1.0" 200 2
